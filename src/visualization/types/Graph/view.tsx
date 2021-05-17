@@ -213,9 +213,16 @@ const XYPlot: FC<Props> = ({
 
   if (isFlagEnabled('annotations')) {
     if (inAnnotationWriteMode && cellID) {
+      console.log('ack!  adding annotation stuff')
       config.interactionHandlers = {
         singleClick: makeAnnotationClickListener(dispatch, cellID),
+        onXBrush: (beginning, end) => {
+          console.log('in annotation xbrush; range:', beginning, end)
+        },
       }
+    } else {
+      console.log('NOT ADDING anno stuff (changed-1)')
+      //config.interactionHandlers= {}
     }
 
     const annotationLayer: AnnotationLayerConfig = makeAnnotationLayer(
