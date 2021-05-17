@@ -65,6 +65,55 @@ export const makeAnnotationClickListener = (
   return singleClickHandler
 }
 
+export const makeAnnotationRangeListener = (
+  dispatch: Dispatch<any>,
+  cellID: string,
+  eventPrefix = 'xyplot'
+) => {
+  const createAnnotation = async userModifiedAnnotation => {
+    const {message, startTime, endTime} = userModifiedAnnotation
+
+    try {
+      await dispatch(
+        writeThenFetchAndSetAnnotations([
+          {
+            summary: message,
+            stream: cellID,
+            startTime: new Date(startTime).getTime(),
+            endTime: new Date(endTime).getTime(),
+          },
+        ])
+      )
+      event(`${eventPrefix}.annotations.create_annotation.create`)
+    } catch (err) {
+      dispatch(notify(createAnnotationFailed(getErrorMessage(err))))
+      event(`${eventPrefix}.annotations.create_annotation.failure`)
+    }
+  }
+
+  const rangeHandler = (start: number | string, end: number | string) => {
+    console.log('here in rangeHandler (annotation utils)')
+    event(`${eventPrefix}.annotations.create_annotation.show_overlay`)
+    dispatch(
+      showOverlay(
+        'add-annotation',
+        {
+          createAnnotation,
+          startTime: start,
+          endTime: end,
+          range: true,
+        },
+        () => {
+          event(`${eventPrefix}.annotations.create_annotation.cancel`)
+          dismissOverlay()
+        }
+      )
+    )
+  }
+
+  return rangeHandler
+}
+
 const makeAnnotationClickHandler = (
   cellID: string,
   dispatch: Dispatch<any>,

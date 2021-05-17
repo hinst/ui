@@ -57,6 +57,7 @@ import {isFlagEnabled} from 'src/shared/utils/featureFlag'
 import {
   makeAnnotationClickListener,
   makeAnnotationLayer,
+  makeAnnotationRangeListener,
 } from 'src/visualization/components/annotationUtils'
 
 interface Props extends VisualizationProps {
@@ -216,9 +217,7 @@ const XYPlot: FC<Props> = ({
       console.log('ack!  adding annotation stuff')
       config.interactionHandlers = {
         singleClick: makeAnnotationClickListener(dispatch, cellID),
-        onXBrush: (beginning, end) => {
-          console.log('in annotation xbrush; range:', beginning, end)
-        },
+        onXBrush: makeAnnotationRangeListener(dispatch, cellID),
       }
     } else {
       console.log('NOT ADDING anno stuff (changed-1)')

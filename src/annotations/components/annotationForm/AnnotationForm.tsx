@@ -43,7 +43,7 @@ export const AnnotationForm: FC<Props> = (props: Props) => {
     const firstPart = message.length && startTime
 
     // TODO:  check that startTime is BEFORE endTime
-    if (range) {
+    if (props.range) {
       return firstPart && endTime
     }
     return firstPart
