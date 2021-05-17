@@ -31,7 +31,6 @@ interface Props {
   type: AnnotationType
   onSubmit: (Annotation) => void
   onClose: () => void
-  range?: boolean
 }
 
 export const AnnotationForm: FC<Props> = (props: Props) => {
@@ -39,11 +38,13 @@ export const AnnotationForm: FC<Props> = (props: Props) => {
   const [endTime, setEndTime] = useState(props.endTime)
   const [message, setMessage] = useState('')
 
+  console.log('foo-42a: here in annotation form; props??', props)
+
   const isValidAnnotationForm = ({message, startTime, endTime}): boolean => {
     const firstPart = message.length && startTime
 
     // TODO:  check that startTime is BEFORE endTime
-    if (props.range) {
+    if (props.type === 'range') {
       return firstPart && endTime
     }
     return firstPart
@@ -72,7 +73,7 @@ export const AnnotationForm: FC<Props> = (props: Props) => {
   }
 
   let endTimeSection = null
-  if (props.range) {
+  if (props.type === 'range') {
     endTimeSection = (
       <Grid.Row>
         <AnnotationTimeInput
