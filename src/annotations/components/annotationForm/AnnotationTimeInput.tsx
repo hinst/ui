@@ -14,12 +14,13 @@ import {
 interface Props {
   onChange: (newTime: string) => void
   onSubmit: () => void
-  startTime: string
+  time: string
+  name: string
 }
 
-export const AnnotationStartTimeInput: FC<Props> = (props: Props) => {
-  const [startTimeValue, setStartTimeValue] = useState<string>(
-    moment(props.startTime).format('YYYY-MM-DD HH:mm:ss.SSS')
+export const AnnotationTimeInput: FC<Props> = (props: Props) => {
+  const [timeValue, setTimeValue] = useState<string>(
+    moment(props.time).format('YYYY-MM-DD HH:mm:ss.SSS')
   )
 
   const isValidTimeFormat = (inputValue: string): boolean => {
@@ -27,7 +28,7 @@ export const AnnotationStartTimeInput: FC<Props> = (props: Props) => {
   }
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setStartTimeValue(event.target.value)
+    setTimeValue(event.target.value)
 
     if (isValidTimeFormat(event.target.value)) {
       props.onChange(
@@ -54,7 +55,7 @@ export const AnnotationStartTimeInput: FC<Props> = (props: Props) => {
   }
 
   const getInputValidationMessage = (): string => {
-    if (!isValidInputValue(startTimeValue)) {
+    if (!isValidInputValue(timeValue)) {
       return 'Format must be YYYY-MM-DD [HH:mm:ss.SSS]'
     }
 
@@ -71,8 +72,8 @@ export const AnnotationStartTimeInput: FC<Props> = (props: Props) => {
         errorMessage={validationMessage}
       >
         <Input
-          name="startTime"
-          value={startTimeValue}
+          name={name}
+          value={timeValue}
           onChange={handleChange}
           onKeyPress={handleKeyPress}
           status={ComponentStatus.Default}

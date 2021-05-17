@@ -10,7 +10,7 @@ import {
   Overlay,
 } from '@influxdata/clockface'
 import {AnnotationMessageInput} from 'src/annotations/components/annotationForm/AnnotationMessageInput'
-import {AnnotationStartTimeInput} from 'src/annotations/components/annotationForm/AnnotationStartTimeInput'
+import {AnnotationTimeInput} from 'src/annotations/components/annotationForm/AnnotationTimeInput'
 
 // Constants
 import {ANNOTATION_FORM_WIDTH} from 'src/annotations/constants'
@@ -102,7 +102,7 @@ export const EditAnnotationForm: FC<Props> = (props: Props) => {
       />
       <Grid className="edit-annotation-grid">
         <Grid.Column widthSM={Columns.Twelve} widthXS={Columns.Twelve}>
-          <AnnotationStartTimeInput
+          <AnnotationTimeInput
             onChange={updateStartTime}
             onSubmit={handleKeyboardSubmit}
             startTime={editedAnnotation.startTime}
