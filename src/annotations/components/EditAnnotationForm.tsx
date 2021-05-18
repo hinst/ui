@@ -45,9 +45,16 @@ export const EditAnnotationForm: FC<Props> = (props: Props) => {
     id: props.annotation.id,
     message: props.annotation.message ?? '',
     startTime: new Date(props.annotation.startTime).toISOString(),
+    endTime: new Date(props.annotation.endTime).toISOString(),
     stream: props.annotation.stream,
     summary: props.annotation.summary,
+    type:
+      props.annotation.startTime === props.annotation.endTime
+        ? 'point'
+        : 'range',
   })
+
+  console.log('in edit form......ACK88-a', props)
 
   const dispatch = useDispatch()
 
@@ -55,22 +62,25 @@ export const EditAnnotationForm: FC<Props> = (props: Props) => {
     return summary.length && startTime
   }
 
-  const updateStartTime = (newStartTime: string) => {
+  const doUpdate = (obj: any) => {
     updateAnnotation(annotation => {
       return {
         ...annotation,
-        startTime: newStartTime,
+        ...obj,
       }
     })
   }
 
+  const updateStartTime = (newStartTime: string) => {
+    doUpdate({startTime: newStartTime})
+  }
+
+  const updateEndTime = (newTime: string) => {
+    doUpdate({endTime: newTime})
+  }
+
   const updateMessage = (newMessage: string) => {
-    updateAnnotation(annotation => {
-      return {
-        ...annotation,
-        summary: newMessage,
-      }
-    })
+    doUpdate({summary: newMessage})
   }
 
   const handleSubmit = () => {
@@ -93,6 +103,19 @@ export const EditAnnotationForm: FC<Props> = (props: Props) => {
     }
   }
 
+  let endTimeSection = null
+  if (editedAnnotation.type === 'range') {
+    endTimeSection = (
+      <AnnotationTimeInput
+        onChange={updateEndTime}
+        onSubmit={handleKeyboardSubmit}
+        time={editedAnnotation.endTime}
+        name="endTime"
+        titleText="End Time (UTC)"
+      />
+    )
+  }
+
   return (
     <Overlay.Container maxWidth={ANNOTATION_FORM_WIDTH}>
       <Overlay.Header
@@ -105,8 +128,10 @@ export const EditAnnotationForm: FC<Props> = (props: Props) => {
           <AnnotationTimeInput
             onChange={updateStartTime}
             onSubmit={handleKeyboardSubmit}
-            startTime={editedAnnotation.startTime}
+            time={editedAnnotation.startTime}
+            name="startTime"
           />
+          {endTimeSection}
           <AnnotationMessageInput
             message={editedAnnotation.summary}
             onChange={updateMessage}

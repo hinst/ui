@@ -152,6 +152,9 @@ export const makeAnnotationLayer = (
   eventPrefix = 'xyplot'
 ) => {
   const cellAnnotations = annotations ? annotations[cellID] ?? [] : []
+
+  console.log(`got cell annotations for ${cellID}, `, annotations)
+
   const annotationsToRender: any[] = cellAnnotations.map(annotation => {
     return {
       ...annotation,
