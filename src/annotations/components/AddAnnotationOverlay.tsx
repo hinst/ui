@@ -17,12 +17,17 @@ export const AddAnnotationOverlay: FC = () => {
     getOverlayParams
   )
 
+  console.log('got endTime and range??', endTime, range)
+
   const handleSubmit = (modifiedAnnotation): void => {
+    console.log('here in handle submit (add anno overlay.....)')
     createAnnotation(modifiedAnnotation)
     onClose()
   }
 
   const annoType = range ? 'range' : 'point'
+
+  console.log('annotype:', annoType)
 
   return (
     <AnnotationForm

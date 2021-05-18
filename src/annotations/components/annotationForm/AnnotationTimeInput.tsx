@@ -16,6 +16,7 @@ interface Props {
   onSubmit: () => void
   time: string
   name: string
+  titleText?: string
 }
 
 export const AnnotationTimeInput: FC<Props> = (props: Props) => {
@@ -64,10 +65,11 @@ export const AnnotationTimeInput: FC<Props> = (props: Props) => {
 
   const validationMessage = getInputValidationMessage()
 
+  const labelText = props.titleText ?? 'Start Time (UTC)'
   return (
     <Grid.Column widthXS={Columns.Twelve}>
       <Form.Element
-        label="Start Time (UTC)"
+        label={labelText}
         required={true}
         errorMessage={validationMessage}
       >

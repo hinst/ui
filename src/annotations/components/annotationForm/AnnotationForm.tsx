@@ -53,7 +53,7 @@ export const AnnotationForm: FC<Props> = (props: Props) => {
   const handleSubmit = (event: FormEvent<HTMLFormElement>): void => {
     event.preventDefault()
 
-    props.onSubmit({message, startTime})
+    props.onSubmit({message, startTime, endTime})
   }
 
   const updateMessage = (newMessage: string): void => {
@@ -81,6 +81,7 @@ export const AnnotationForm: FC<Props> = (props: Props) => {
           onSubmit={handleKeyboardSubmit}
           time={endTime}
           name="endTime"
+          titleText="End Time (UTC)"
         />
       </Grid.Row>
     )
