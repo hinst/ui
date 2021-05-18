@@ -58,7 +58,7 @@ import {
   makeAnnotationClickListener,
   makeAnnotationLayer,
   makeAnnotationRangeListener,
-} from 'src/visualization/components/annotationUtils'
+} from 'src/visualization/utils/annotationUtils'
 
 interface Props extends VisualizationProps {
   properties: XYViewProperties
