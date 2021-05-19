@@ -23,6 +23,7 @@ import {Annotation, EditAnnotation} from 'src/types'
 
 // Utils
 import {event} from 'src/cloud/utils/reporting'
+import {checkAnnotationFormValidity} from './AnnotationForm'
 
 // Style
 import 'src/annotations/components/editAnnotationForm.scss'
@@ -54,12 +55,15 @@ export const EditAnnotationForm: FC<Props> = (props: Props) => {
         : 'range',
   })
 
-  console.log('in edit form......ACK88-a', props)
-
   const dispatch = useDispatch()
 
-  const isValidAnnotationForm = ({summary, startTime}): boolean => {
-    return summary.length && startTime
+  const isValidAnnotationForm = (): boolean => {
+    return checkAnnotationFormValidity(
+      editedAnnotation.type,
+      editedAnnotation.summary,
+      editedAnnotation.startTime,
+      editedAnnotation.endTime
+    )
   }
 
   const doUpdate = (obj: any) => {
@@ -111,7 +115,7 @@ export const EditAnnotationForm: FC<Props> = (props: Props) => {
         onSubmit={handleKeyboardSubmit}
         time={editedAnnotation.endTime}
         name="endTime"
-        titleText="End Time (UTC)"
+        titleText="Stop Time (UTC)"
       />
     )
   }
@@ -160,10 +164,7 @@ export const EditAnnotationForm: FC<Props> = (props: Props) => {
             onClick={handleSubmit}
             color={ComponentColor.Primary}
             status={
-              isValidAnnotationForm({
-                startTime: editedAnnotation.startTime,
-                summary: editedAnnotation.summary,
-              })
+              isValidAnnotationForm()
                 ? ComponentStatus.Default
                 : ComponentStatus.Disabled
             }

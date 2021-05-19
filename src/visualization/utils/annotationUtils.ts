@@ -159,6 +159,7 @@ export const makeAnnotationLayer = (
     return {
       ...annotation,
       color: InfluxColors.Honeydew,
+      secondaryColor: InfluxColors.Wasabi,
     }
   })
 
@@ -182,6 +183,7 @@ export const makeAnnotationLayer = (
           title: annotation.summary,
           description: '',
           color: annotation.color,
+          secondaryColor: annotation.secondaryColor,
           startValue: new Date(annotation.startTime).getTime(),
           stopValue: new Date(annotation.endTime).getTime(),
           dimension: 'x',

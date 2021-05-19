@@ -16,6 +16,7 @@ import {AnnotationTimeInput} from 'src/annotations/components/annotationForm/Ann
 
 // Constants
 import {ANNOTATION_FORM_WIDTH} from 'src/annotations/constants'
+import {start} from 'repl'
 
 interface Annotation {
   message: string
@@ -33,21 +34,32 @@ interface Props {
   onClose: () => void
 }
 
+export const checkAnnotationFormValidity = (
+  annotationType: string,
+  message: string,
+  startTime: any,
+  endTime: any
+) => {
+  const firstPart = message.length && startTime
+
+  // not checking if start <= end right now
+  // initially, the times are numbers, and then if the user manually edits them then
+  // they are strings, so the simple compare is non-trivial.
+  // plus, the backend checks if the startTime is before or equals the endTime
+  // so, letting the backend do that check for now.
+  if (annotationType === 'range') {
+    return firstPart && endTime
+  }
+  return firstPart
+}
+
 export const AnnotationForm: FC<Props> = (props: Props) => {
   const [startTime, setStartTime] = useState(props.startTime)
   const [endTime, setEndTime] = useState(props.endTime)
   const [message, setMessage] = useState('')
 
-  console.log('foo-42a: here in annotation form; props??', props)
-
   const isValidAnnotationForm = ({message, startTime, endTime}): boolean => {
-    const firstPart = message.length && startTime
-
-    // TODO:  check that startTime is BEFORE endTime
-    if (props.type === 'range') {
-      return firstPart && endTime
-    }
-    return firstPart
+    return checkAnnotationFormValidity(props.type, message, startTime, endTime)
   }
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>): void => {
@@ -81,7 +93,7 @@ export const AnnotationForm: FC<Props> = (props: Props) => {
           onSubmit={handleKeyboardSubmit}
           time={endTime}
           name="endTime"
-          titleText="End Time (UTC)"
+          titleText="Stop Time (UTC)"
         />
       </Grid.Row>
     )
