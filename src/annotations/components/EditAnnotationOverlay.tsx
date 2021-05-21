@@ -3,7 +3,7 @@ import React, {FC, useContext} from 'react'
 import {useSelector, useDispatch} from 'react-redux'
 
 // Components
-import {EditAnnotationForm} from 'src/annotations/components/EditAnnotationForm'
+import {EditAnnotationForm} from 'src/annotations/components/annotationForm/EditAnnotationForm'
 
 // Contexts
 import {OverlayContext} from 'src/overlays/components/OverlayController'

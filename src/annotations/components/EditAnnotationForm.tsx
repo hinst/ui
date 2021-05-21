@@ -11,7 +11,7 @@ import {
 } from '@influxdata/clockface'
 
 import {AnnotationMessageInput} from 'src/annotations/components/annotationForm/AnnotationMessageInput'
-import {AnnotationStartTimeInput} from 'src/annotations/components/annotationForm/AnnotationStartTimeInput'
+import {AnnotationTimeInput} from 'src/annotations/components/annotationForm/AnnotationTimeInput'
 
 // Constants
 import {ANNOTATION_FORM_WIDTH} from 'src/annotations/constants'
@@ -20,10 +20,11 @@ import {ANNOTATION_FORM_WIDTH} from 'src/annotations/constants'
 import {deleteAnnotations} from 'src/annotations/actions/thunks'
 
 // Types
-import {Annotation} from 'src/types'
+import {Annotation, EditAnnotation} from 'src/types'
 
 // Utils
 import {event} from 'src/cloud/utils/reporting'
+import {checkAnnotationFormValidity} from './AnnotationForm'
 
 // Style
 import 'src/annotations/components/editAnnotationForm.scss'
@@ -36,42 +37,55 @@ import {
 import {notify} from 'src/shared/actions/notifications'
 
 interface Props {
-  handleSubmit: (editedAnnotation: Annotation) => void
+  handleSubmit: (editedAnnotation: EditAnnotation) => void
   annotation: Annotation
   handleClose: () => void
 }
 
 export const EditAnnotationForm: FC<Props> = (props: Props) => {
-  const [editedAnnotation, updateAnnotation] = useState<Annotation>({
+  const [editedAnnotation, updateAnnotation] = useState<EditAnnotation>({
     id: props.annotation.id,
     message: props.annotation.message ?? '',
     startTime: new Date(props.annotation.startTime).toISOString(),
+    endTime: new Date(props.annotation.endTime).toISOString(),
     stream: props.annotation.stream,
     summary: props.annotation.summary,
+    type:
+      props.annotation.startTime === props.annotation.endTime
+        ? 'point'
+        : 'range',
   })
 
   const dispatch = useDispatch()
 
-  const isValidAnnotationForm = ({summary, startTime}): boolean => {
-    return summary.length && startTime
+  const isValidAnnotationForm = (): boolean => {
+    return checkAnnotationFormValidity(
+      editedAnnotation.type,
+      editedAnnotation.summary,
+      editedAnnotation.startTime,
+      editedAnnotation.endTime
+    )
+  }
+
+  const doUpdate = (obj: any) => {
+    updateAnnotation(annotation => {
+      return {
+        ...annotation,
+        ...obj,
+      }
+    })
   }
 
   const updateStartTime = (newStartTime: string) => {
-    updateAnnotation(annotation => {
-      return {
-        ...annotation,
-        startTime: newStartTime,
-      }
-    })
+    doUpdate({startTime: newStartTime})
+  }
+
+  const updateEndTime = (newTime: string) => {
+    doUpdate({endTime: newTime})
   }
 
   const updateMessage = (newMessage: string) => {
-    updateAnnotation(annotation => {
-      return {
-        ...annotation,
-        summary: newMessage,
-      }
-    })
+    doUpdate({summary: newMessage})
   }
 
   const handleSubmit = () => {
@@ -99,6 +113,19 @@ export const EditAnnotationForm: FC<Props> = (props: Props) => {
     }
   }
 
+  let endTimeSection = null
+  if (editedAnnotation.type === 'range') {
+    endTimeSection = (
+      <AnnotationTimeInput
+        onChange={updateEndTime}
+        onSubmit={handleKeyboardSubmit}
+        time={editedAnnotation.endTime}
+        name="endTime"
+        titleText="Stop Time (UTC)"
+      />
+    )
+  }
+
   return (
     <Overlay.Container maxWidth={ANNOTATION_FORM_WIDTH}>
       <Overlay.Header
@@ -108,11 +135,13 @@ export const EditAnnotationForm: FC<Props> = (props: Props) => {
       />
       <Grid className="edit-annotation-grid">
         <Grid.Column widthSM={Columns.Twelve} widthXS={Columns.Twelve}>
-          <AnnotationStartTimeInput
+          <AnnotationTimeInput
             onChange={updateStartTime}
             onSubmit={handleKeyboardSubmit}
-            startTime={editedAnnotation.startTime}
+            time={editedAnnotation.startTime}
+            name="startTime"
           />
+          {endTimeSection}
           <AnnotationMessageInput
             message={editedAnnotation.summary}
             onChange={updateMessage}
@@ -141,10 +170,7 @@ export const EditAnnotationForm: FC<Props> = (props: Props) => {
             onClick={handleSubmit}
             color={ComponentColor.Primary}
             status={
-              isValidAnnotationForm({
-                startTime: editedAnnotation.startTime,
-                summary: editedAnnotation.summary,
-              })
+              isValidAnnotationForm()
                 ? ComponentStatus.Default
                 : ComponentStatus.Disabled
             }
