@@ -29,11 +29,7 @@ import {ScatterViewProperties} from 'src/types'
 import {VisualizationProps} from 'src/visualization'
 
 // Selectors
-import {
-  isWriteModeEnabled,
-  selectAreAnnotationsVisible,
-} from 'src/annotations/selectors'
-import {addAnnotationLayer} from 'src/visualization/utils/annotationUtils'
+import {isWriteModeEnabled} from 'src/annotations/selectors'
 
 interface Props extends VisualizationProps {
   properties: ScatterViewProperties
@@ -42,8 +38,6 @@ interface Props extends VisualizationProps {
 const ScatterPlot: FunctionComponent<Props> = ({
   properties,
   result,
-  annotations,
-  cellID,
   timeRange,
 }) => {
   const {theme, timeZone} = useContext(AppSettingContext)
@@ -80,7 +74,6 @@ const ScatterPlot: FunctionComponent<Props> = ({
 
   const dispatch = useDispatch()
   const inAnnotationWriteMode = useSelector(isWriteModeEnabled)
-  const annotationsAreVisible = useSelector(selectAreAnnotationsVisible)
 
   const isValidView =
     xColumn &&
@@ -146,18 +139,13 @@ const ScatterPlot: FunctionComponent<Props> = ({
     ],
   }
 
-  addAnnotationLayer(
-    config,
-    inAnnotationWriteMode,
-    cellID,
-    xColumn,
-    yColumn,
-    fillColumns,
-    annotations,
-    annotationsAreVisible,
-    dispatch,
-    'scatter'
-  )
+  if (inAnnotationWriteMode && isFlagEnabled('annotations')) {
+    config.interactionHandlers = {
+      singleClick: () => {
+        dispatch(handleUnsupportedGraphType('Scatter Plot'))
+      },
+    }
+  }
 
   return <Plot config={config} />
 }
