@@ -4,13 +4,17 @@ import {useDispatch, useSelector} from 'react-redux'
 
 // Components
 import {
+  AlignItems,
   ComponentColor,
   ComponentSize,
+  FlexBox,
   FlexBoxChild,
+  FlexDirection,
   InfluxColors,
   InputLabel,
   InputToggleType,
   JustifyContent,
+  SlideToggle,
   TextBlock,
   Toggle,
 } from '@influxdata/clockface'
@@ -67,7 +71,7 @@ export const AnnotationsControlBar: FC = () => {
         <FlexBoxChild grow={1} />
         <FlexBoxChild grow={0}>
           <Toggle
-            style={{marginRight: 20}}
+            style={{marginRight: 15}}
             id="enable-annotation-visibility"
             type={InputToggleType.Checkbox}
             checked={annotationsAreVisible}
@@ -81,22 +85,31 @@ export const AnnotationsControlBar: FC = () => {
             </InputLabel>
           </Toggle>
         </FlexBoxChild>
-        <FlexBoxChild grow={0}>
-          <Toggle
-            style={{marginRight: 20}}
+        <FlexBox
+          direction={FlexDirection.Row}
+          alignItems={AlignItems.Center}
+          margin={ComponentSize.Medium}
+          style={{
+            border: '1px solid gray',
+            padding: 7,
+            borderRadius: 16,
+            paddingLeft: 15,
+            paddingRight: 10,
+          }}
+        >
+          <InputLabel active={!inWriteMode}>Enable Zoom Mode</InputLabel>
+          <SlideToggle
             id="enable-annotation-mode"
-            type={InputToggleType.Checkbox}
-            checked={inWriteMode}
+            active={inWriteMode}
             onChange={changeWriteMode}
             color={ComponentColor.Primary}
             size={ComponentSize.ExtraSmall}
             testID="annotations-write-mode-toggle"
-          >
-            <InputLabel htmlFor="enable-annotation-mode">
-              Enable Write Mode
-            </InputLabel>
-          </Toggle>
-        </FlexBoxChild>
+          />
+          <InputLabel active={inWriteMode}>
+            Enable Annotation Write Mode
+          </InputLabel>
+        </FlexBox>
       </Toolbar>
     </ErrorBoundary>
   )
