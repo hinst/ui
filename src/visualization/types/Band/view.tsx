@@ -1,7 +1,7 @@
 // Libraries
 import React, {FC, useMemo, useContext} from 'react'
 
-import {AnnotationLayerConfig, Config, Plot} from '@influxdata/giraffe'
+import {Config, Plot} from '@influxdata/giraffe'
 
 // Redux
 import {
@@ -11,14 +11,8 @@ import {
 
 import {useDispatch, useSelector} from 'react-redux'
 
-import {isFlagEnabled} from 'src/shared/utils/featureFlag'
-
 // Annotations
-import {
-  makeAnnotationClickListener,
-  makeAnnotationLayer,
-  makeAnnotationRangeListener,
-} from 'src/visualization/utils/annotationUtils'
+import {addAnnotationLayer} from 'src/visualization/utils/annotationUtils'
 
 // Components
 import EmptyGraphMessage from 'src/shared/components/EmptyGraphMessage'
@@ -218,34 +212,18 @@ const BandPlot: FC<Props> = ({
     ],
   }
 
-  if (isFlagEnabled('annotations')) {
-    if (inAnnotationWriteMode && cellID) {
-      config.interactionHandlers = {
-        singleClick: makeAnnotationClickListener(dispatch, cellID, 'band'),
-      }
-      if (isFlagEnabled('rangeAnnotations')) {
-        config.interactionHandlers.onXBrush = makeAnnotationRangeListener(
-          dispatch,
-          cellID,
-          'band'
-        )
-      }
-    }
-
-    const annotationLayer: AnnotationLayerConfig = makeAnnotationLayer(
-      cellID,
-      xColumn,
-      yColumn,
-      groupKey,
-      annotations,
-      annotationsAreVisible,
-      dispatch
-    )
-
-    if (annotationLayer) {
-      config.layers.push(annotationLayer)
-    }
-  }
+  addAnnotationLayer(
+    config,
+    inAnnotationWriteMode,
+    cellID,
+    xColumn,
+    yColumn,
+    groupKey,
+    annotations,
+    annotationsAreVisible,
+    dispatch,
+    'band'
+  )
 
   return <Plot config={config} />
 }

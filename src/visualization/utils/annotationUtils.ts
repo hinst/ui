@@ -17,11 +17,13 @@ import {getErrorMessage} from 'src/utils/api'
 
 import {
   AnnotationLayerConfig,
+  Config,
   InfluxColors,
   InteractionHandlerArguments,
 } from '@influxdata/giraffe'
+import {isFlagEnabled} from 'src/shared/utils/featureFlag'
 
-export const makeAnnotationClickListener = (
+const makeAnnotationClickListener = (
   dispatch: Dispatch<any>,
   cellID: string,
   eventPrefix = 'xyplot'
@@ -68,7 +70,7 @@ export const makeAnnotationClickListener = (
   return singleClickHandler
 }
 
-export const makeAnnotationRangeListener = (
+const makeAnnotationRangeListener = (
   dispatch: Dispatch<any>,
   cellID: string,
   eventPrefix = 'xyplot'
@@ -150,7 +152,7 @@ const makeAnnotationClickHandler = (
   return clickHandler
 }
 
-export const makeAnnotationLayer = (
+const makeAnnotationLayer = (
   cellID: string,
   xColumn: string,
   yColumn: string,
@@ -199,6 +201,49 @@ export const makeAnnotationLayer = (
     return annotationLayer
   }
   return null
+}
+
+export const addAnnotationLayer = (
+  config: Config,
+  inAnnotationWriteMode: boolean,
+  cellID: string,
+  xColumn: string,
+  yColumn: string,
+  groupKey: string[],
+  annotations: AnnotationsList,
+  annotationsAreVisible: boolean,
+  dispatch: Dispatch<any>,
+  eventPrefix = 'xyplot'
+) => {
+  if (isFlagEnabled('annotations')) {
+    if (inAnnotationWriteMode && cellID) {
+      config.interactionHandlers = {
+        singleClick: makeAnnotationClickListener(dispatch, cellID, 'band'),
+      }
+      if (isFlagEnabled('rangeAnnotations')) {
+        config.interactionHandlers.onXBrush = makeAnnotationRangeListener(
+          dispatch,
+          cellID,
+          eventPrefix
+        )
+      }
+    }
+
+    const annotationLayer: AnnotationLayerConfig = makeAnnotationLayer(
+      cellID,
+      xColumn,
+      yColumn,
+      groupKey,
+      annotations,
+      annotationsAreVisible,
+      dispatch,
+      eventPrefix
+    )
+
+    if (annotationLayer) {
+      config.layers.push(annotationLayer)
+    }
+  }
 }
 
 export const handleUnsupportedGraphType = graphType => {
