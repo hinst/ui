@@ -17,9 +17,11 @@ import {getErrorMessage} from 'src/utils/api'
 
 import {
   AnnotationLayerConfig,
+  Config,
   InfluxColors,
   InteractionHandlerArguments,
 } from '@influxdata/giraffe'
+import {isFlagEnabled} from 'src/shared/utils/featureFlag'
 
 export const makeAnnotationClickListener = (
   dispatch: Dispatch<any>,
@@ -148,6 +150,48 @@ const makeAnnotationClickHandler = (
     }
   }
   return clickHandler
+}
+
+export const addAnnotationLayer = (
+  config: Config,
+  inAnnotationWriteMode: boolean,
+  cellID: string,
+  xColumn: string,
+  yColumn: string,
+  groupKey: string[],
+  annotations: AnnotationsList,
+  annotationsAreVisible: boolean,
+  dispatch: Dispatch<any>,
+  eventPrefix = 'xyplot'
+) => {
+  if (isFlagEnabled('annotations')) {
+    if (inAnnotationWriteMode && cellID) {
+      config.interactionHandlers = {
+        singleClick: makeAnnotationClickListener(dispatch, cellID, 'band'),
+      }
+      if (isFlagEnabled('rangeAnnotations')) {
+        config.interactionHandlers.onXBrush = makeAnnotationRangeListener(
+          dispatch,
+          cellID,
+          'band'
+        )
+      }
+    }
+
+    const annotationLayer: AnnotationLayerConfig = makeAnnotationLayer(
+      cellID,
+      xColumn,
+      yColumn,
+      groupKey,
+      annotations,
+      annotationsAreVisible,
+      dispatch
+    )
+
+    if (annotationLayer) {
+      config.layers.push(annotationLayer)
+    }
+  }
 }
 
 export const makeAnnotationLayer = (
