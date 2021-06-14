@@ -89,8 +89,14 @@ const UploadDataDetailsView: FC = () => {
                       <WriteDataHelperBuckets />
                     </Panel.Body>
                   </Panel>
-                  <p>{!isNonannotatedCSV && (isLP ? <LineProtocolTabs /> : <CsvMethod />)}</p>
-                  <p>{!isNonannotatedCSV && (isLP && <LineProtocolFooterButtons />)}</p>
+                  <p>
+                    {!isNonannotatedCSV &&
+                      (isLP ? <LineProtocolTabs /> : <CsvMethod />)}
+                  </p>
+                  <p>
+                    {!isNonannotatedCSV &&
+                      isLP && <LineProtocolFooterButtons />}
+                  </p>
                   {pageContent}
                 </div>
               </div>
