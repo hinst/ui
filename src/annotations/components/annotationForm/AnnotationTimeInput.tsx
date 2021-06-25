@@ -100,12 +100,14 @@ export const AnnotationTimeInput: FC<Props> = (props: Props) => {
 
   const validationMessage = getInputValidationMessage()
   const testID = `${props.name}-testID`
+  const parentTestID = `parent-${testID}`
   const labelText = props.titleText ?? 'Start Time'
 
   return (
     <Form.Element
       label={labelText}
       required={true}
+      testID={parentTestID}
       errorMessage={validationMessage}
       style={props.style}
     >

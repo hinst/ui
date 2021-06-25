@@ -532,6 +532,55 @@ describe('The Annotations UI functionality', () => {
       cy.getByTestID('giraffe-annotation-tooltip').contains('im a hippopotamus')
     })
 
+    it.only('does not allow the form to be submitted if there is a validation error', () => {
+      // first create a range annotation:
+      cy.getByTestID('cell blah').within(() => {
+        cy.getByTestID(`giraffe-layer-line`).then(([canvas]) => {
+          const {width, height} = canvas
+
+          cy.wrap(canvas).trigger('mousedown', {
+            x: width / 3,
+            y: height / 2,
+            force: true,
+            shiftKey: true,
+          })
+          cy.wrap(canvas).trigger('mousemove', {
+            x: (width * 2) / 3,
+            y: height / 2,
+            force: true,
+            shiftKey: true,
+          })
+          cy.wrap(canvas).trigger('mouseup', {force: true, shiftKey: true})
+        })
+      })
+
+      cy.getByTestID('overlay--container').within(() => {
+        cy.getByTestID('edit-annotation-message')
+          .should('be.visible')
+          .click()
+          .focused()
+          .type('random annotation, should be a range')
+
+        // submit should be enabled:
+        cy.getByTestID('annotation-submit-button').should('not.be.disabled')
+
+        // ok; cause an error:
+        cy.getByTestID('endTime-testID')
+          .should('be.visible')
+          .click()
+          .clear()
+
+        // no end time should cause an error:
+        cy.getByTestID('annotation-submit-button').should('be.disabled')
+
+        // check the error message itself:
+        // TODO
+
+        // check password mismatch
+        cy.getByTestID('form--element-error').contains('Format must be ')
+      })
+    })
+
     it('can create an annotation that is scoped to a dashboard cell', () => {
       // create a new cell
       cy.getByTestID('button')
