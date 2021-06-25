@@ -584,6 +584,11 @@ describe('The Annotations UI functionality', () => {
             // put the text back; should be valid again:
             cy.getByTestID('endTime-testID').type(endTimeValue)
             cy.getByTestID('annotation-submit-button').should('not.be.disabled')
+
+            // put the end time BEFORE the start time ; should get an error:
+            cy.getByTestID('startTime-testID')
+              .invoke('val')
+              .then(startTimeValue => {})
           })
       })
     })
