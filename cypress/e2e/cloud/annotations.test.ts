@@ -566,18 +566,25 @@ describe('The Annotations UI functionality', () => {
 
         // ok; cause an error:
         cy.getByTestID('endTime-testID')
-          .should('be.visible')
-          .click()
-          .clear()
+          .invoke('val')
+          .then(endTimeValue => {
+            cy.getByTestID('endTime-testID')
+              .should('be.visible')
+              .click()
+              .clear()
 
-        // no end time should cause an error:
-        cy.getByTestID('annotation-submit-button').should('be.disabled')
+            // no end time should cause an error:
+            cy.getByTestID('annotation-submit-button').should('be.disabled')
 
-        // check the error message itself:
-        // TODO
+            // check the error message itself:
 
-        // check password mismatch
-        cy.getByTestID('form--element-error').contains('Format must be ')
+            // check password mismatch
+            cy.getByTestID('form--element-error').contains('Format must be ')
+
+            // put the text back; should be valid again:
+            cy.getByTestID('endTime-testID').type(endTimeValue)
+            cy.getByTestID('annotation-submit-button').should('not.be.disabled')
+          })
       })
     })
 
