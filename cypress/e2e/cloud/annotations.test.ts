@@ -51,6 +51,7 @@ describe('The Annotations UI functionality', () => {
                     .type('blah')
                   cy.getByTestID('save-cell--button').click()
                 })
+                cy.getByTestID('toggle-annotations-controls').click()
               })
           })
         )
